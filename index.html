@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floor Map Creator - Indoor Navigation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark);
+        }
+
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 700px;
+        }
+
+        .sidebar {
+            background: var(--light);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .tool-section {
+            margin-bottom: 28px;
+        }
+
+        .tool-section h3 {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+
+        .tool-btn {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border: 2px solid var(--border);
+            background: white;
+            color: var(--dark);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-align: left;
+        }
+
+        .tool-btn:hover {
+            background: #f1f5f9;
+            border-color: var(--primary);
+            transform: translateX(2px);
+        }
+
+        .tool-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .tool-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .input-group input[type="text"],
+        .input-group input[type="number"],
+        .input-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .color-picker-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .color-option {
+            width: 100%;
+            height: 40px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.05);
+            border-color: var(--primary);
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .action-btn.primary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .action-btn.secondary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .action-btn.danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .action-btn.neutral {
+            background: #64748b;
+            color: white;
+        }
+
+        .canvas-area {
+            padding: 24px;
+            background: #f8fafc;
+            position: relative;
+            overflow: auto;
+        }
+
+        .canvas-wrapper {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px var(--shadow);
+            display: inline-block;
+            position: relative;
+        }
+
+        #canvas {
+            display: block;
+            cursor: crosshair;
+        }
+
+        .controls-bar {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            z-index: 10;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--border);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .control-btn:hover {
+            background: var(--light);
+            border-color: var(--primary);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .upload-label {
+            padding: 8px 16px;
+            border: 2px solid var(--primary);
+            background: var(--primary);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .upload-label:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .status-bar {
+            background: #1e293b;
+            color: white;
+            padding: 12px 24px;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--dark);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <div>
+                <h1>
+                    <span>🏫</span>
+                    Floor Map Creator
+                </h1>
+                <div class="header-subtitle">Indoor Navigation System</div>
+            </div>
+        </div>
+
+        <div class="controls-bar">
+            <div class="file-input-wrapper">
+                <input type="file" id="imageUpload" accept="image/*">
+                <label for="imageUpload" class="upload-label">
+                    <span>📷</span>
+                    Upload Floor Plan
+                </label>
+            </div>
+            <button class="control-btn" onclick="undo()" id="undoBtn" disabled>
+                <span>↶</span> Undo
+            </button>
+            <button class="control-btn" onclick="redo()" id="redoBtn" disabled>
+                <span>↷</span> Redo
+            </button>
+            <button class="control-btn" onclick="toggleGrid()">
+                <span>⊞</span> Toggle Grid
+            </button>
+            <button class="control-btn" onclick="zoomIn()">
+                <span>+</span> Zoom In
+            </button>
+            <button class="control-btn" onclick="zoomOut()">
+                <span>−</span> Zoom Out
+            </button>
+            <button class="control-btn" onclick="resetZoom()">
+                <span>⊙</span> Reset Zoom
+            </button>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="tool-section">
+                    <h3>Drawing Tools</h3>
+                    <button class="tool-btn active" onclick="setTool('room')" id="roomBtn">
+                        <span class="tool-icon">📦</span>
+                        <span>Room</span>
+                    </button>
+                    <button class="tool-btn" onclick="setTool('corridor')" id="corridorBtn">
+                        <span class="tool-icon">➡️</span>
+                        <span>Corridor</span>
+                    </button>
+                    <button class="tool-btn" onclick="setTool('door')" id="doorBtn">
+                        <span class="tool-icon">🚪</span>
+                        <span>Door</span>
+                    </button>
+                    <button class="tool-btn" onclick="setTool('window')" id="windowBtn">
+                        <span class="tool-icon">🪟</span>
+                        <span>Window</span>
+                    </button>
+                    <button class="tool-btn" onclick="setTool('stairs')" id="stairsBtn">
+                        <span class="tool-icon">🪜</span>
+                        <span>Stairs</span>
+                    </button>
+                    <button class="tool-btn" onclick="setTool('elevator')" id="elevatorBtn">
+                        <span class="tool-icon">🛗</span>
+                        <span>Elevator</span>
+                    </button>
+                    <button class="tool-btn" onclick="setTool('marker')" id="markerBtn">
+                        <span class="tool-icon">📍</span>
+                        <span>Waypoint</span>
+                    </button>
+                    <button class="tool-btn" onclick="setTool('text')" id="textBtn">
+                        <span class="tool-icon">📝</span>
+                        <span>Label</span>
+                    </button>
+                </div>
+
+                <div class="tool-section">
+                    <h3>Properties</h3>
+                    <div class="input-group">
+                        <label>Label Text</label>
+                        <input type="text" id="labelInput" placeholder="e.g., Room 101">
+                    </div>
+                    <div class="input-group">
+                        <label>Room Type</label>
+                        <select id="roomType">
+                            <option value="classroom">Classroom</option>
+                            <option value="lab">Laboratory</option>
+                            <option value="computerlab">Computer Lab</option>
+                            <option value="staffroom">Staff Room</option>
+                            <option value="principaloffice">Principal Office</option>
+                            <option value="hodoffice">HOD Office</option>
+                            <option value="seminar">Seminar Hall</option>
+                            <option value="library">Library</option>
+                            <option value="readingroom">Reading Room</option>
+                            <option value="cafeteria">Cafeteria</option>
+                            <option value="canteen">Canteen</option>
+                            <option value="washroom">Washroom</option>
+                            <option value="auditorium">Auditorium</option>
+                            <option value="playground">Playground</option>
+                            <option value="parking">Parking</option>
+                            <option value="reception">Reception</option>
+                            <option value="examhall">Exam Hall</option>
+                            <option value="store">Store Room</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tool-section">
+                    <h3>Settings</h3>
+                    <div class="input-group">
+                        <label>Grid Size (px)</label>
+                        <input type="number" id="gridSize" value="20" min="10" max="50">
+                    </div>
+                    <div class="input-group">
+                        <label>Background Opacity</label>
+                        <input type="range" id="bgOpacity" min="0" max="100" value="50" style="width: 100%;">
+                    </div>
+                </div>
+
+                <div class="tool-section">
+                    <h3>Color Legend</h3>
+                    <div style="font-size: 11px; line-height: 1.6; max-height: 300px; overflow-y: auto;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(59, 130, 246, 0.5); border: 2px solid #3b82f6; border-radius: 3px;"></div>
+                            <span>Classroom</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(16, 185, 129, 0.5); border: 2px solid #10b981; border-radius: 3px;"></div>
+                            <span>Laboratory</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(6, 182, 212, 0.5); border: 2px solid #06b6d4; border-radius: 3px;"></div>
+                            <span>Computer Lab</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(245, 158, 11, 0.5); border: 2px solid #f59e0b; border-radius: 3px;"></div>
+                            <span>Staff Room</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(220, 38, 38, 0.5); border: 2px solid #dc2626; border-radius: 3px;"></div>
+                            <span>Principal Office</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(249, 115, 22, 0.5); border: 2px solid #f97316; border-radius: 3px;"></div>
+                            <span>HOD Office</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(139, 92, 246, 0.5); border: 2px solid #8b5cf6; border-radius: 3px;"></div>
+                            <span>Seminar Hall</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(168, 85, 247, 0.5); border: 2px solid #a855f7; border-radius: 3px;"></div>
+                            <span>Library</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(192, 132, 252, 0.5); border: 2px solid #c084fc; border-radius: 3px;"></div>
+                            <span>Reading Room</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(236, 72, 153, 0.5); border: 2px solid #ec4899; border-radius: 3px;"></div>
+                            <span>Cafeteria</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(244, 114, 182, 0.5); border: 2px solid #f472b6; border-radius: 3px;"></div>
+                            <span>Canteen</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(20, 184, 166, 0.5); border: 2px solid #14b8a6; border-radius: 3px;"></div>
+                            <span>Washroom</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(239, 68, 68, 0.5); border: 2px solid #ef4444; border-radius: 3px;"></div>
+                            <span>Auditorium</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(34, 197, 94, 0.5); border: 2px solid #22c55e; border-radius: 3px;"></div>
+                            <span>Playground</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(100, 116, 139, 0.5); border: 2px solid #64748b; border-radius: 3px;"></div>
+                            <span>Parking</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(14, 165, 233, 0.5); border: 2px solid #0ea5e9; border-radius: 3px;"></div>
+                            <span>Reception</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(234, 179, 8, 0.5); border: 2px solid #eab308; border-radius: 3px;"></div>
+                            <span>Exam Hall</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <div style="width: 18px; height: 18px; background: rgba(161, 161, 170, 0.5); border: 2px solid #a1a1aa; border-radius: 3px;"></div>
+                            <span>Store Room</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tool-section">
+                    <h3>Actions</h3>
+                    <button class="action-btn primary" onclick="exportAsPNG()">
+                        <span>💾</span> Export as PNG
+                    </button>
+                    <button class="action-btn secondary" onclick="exportAsJSON()">
+                        <span>📄</span> Export as JSON
+                    </button>
+                    <button class="action-btn neutral" onclick="exportAsSVG()">
+                        <span>🎨</span> Export as SVG
+                    </button>
+                    <button class="action-btn danger" onclick="clearAll()">
+                        <span>🗑️</span> Clear All
+                    </button>
+                </div>
+            </div>
+
+            <div class="canvas-area">
+                <div class="canvas-wrapper" id="canvasWrapper">
+                    <canvas id="canvas" width="1400" height="900"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <span>Elements: <span id="elementCount">0</span></span>
+            </div>
+            <div class="status-item">
+                <span>Tool: <span id="currentTool">Room</span></span>
+            </div>
+            <div class="status-item">
+                <span>Zoom: <span id="zoomLevel">100%</span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let currentTool = 'room';
+        let isDrawing = false;
+        let startX, startY;
+        let elements = [];
+        let history = [];
+        let historyStep = -1;
+        let gridSize = 20;
+        let showGrid = true;
+        let zoom = 1;
+        let backgroundImage = null;
+        let bgOpacity = 0.5;
+
+        // Initialize
+        drawCanvas();
+
+        // Image upload
+        document.getElementById('imageUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        backgroundImage = img;
+                        // Resize canvas to match image
+                        canvas.width = Math.max(img.width, 1400);
+                        canvas.height = Math.max(img.height, 900);
+                        drawCanvas();
+                        showToast('Background image loaded successfully!');
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Background opacity
+        document.getElementById('bgOpacity').addEventListener('input', function(e) {
+            bgOpacity = e.target.value / 100;
+            drawCanvas();
+        });
+
+        // Grid size
+        document.getElementById('gridSize').addEventListener('change', function(e) {
+            gridSize = parseInt(e.target.value);
+            drawCanvas();
+        });
+
+        function snapToGrid(value) {
+            return Math.round(value / gridSize) * gridSize;
+        }
+
+        function setTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tool + 'Btn').classList.add('active');
+            document.getElementById('currentTool').textContent = tool.charAt(0).toUpperCase() + tool.slice(1);
+        }
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: (e.clientX - rect.left) / zoom,
+                y: (e.clientY - rect.top) / zoom
+            };
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const pos = getMousePos(e);
+            startX = snapToGrid(pos.x);
+            startY = snapToGrid(pos.y);
+            
+            if (['door', 'window', 'stairs', 'elevator', 'marker', 'text'].includes(currentTool)) {
+                const label = document.getElementById('labelInput').value || '';
+                const roomType = document.getElementById('roomType').value;
+                addElement({
+                    type: currentTool,
+                    x: startX,
+                    y: startY,
+                    label: label,
+                    roomType: roomType
+                });
+            } else {
+                isDrawing = true;
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            
+            const pos = getMousePos(e);
+            const currentX = snapToGrid(pos.x);
+            const currentY = snapToGrid(pos.y);
+            
+            drawCanvas();
+            
+            // Preview
+            ctx.save();
+            ctx.globalAlpha = 0.5;
+            drawElement({
+                type: currentTool,
+                x: startX,
+                y: startY,
+                width: currentX - startX,
+                height: currentY - startY
+            });
+            ctx.restore();
+        });
+
+        canvas.addEventListener('mouseup', (e) => {
+            if (!isDrawing) return;
+            
+            const pos = getMousePos(e);
+            const endX = snapToGrid(pos.x);
+            const endY = snapToGrid(pos.y);
+            
+            const width = endX - startX;
+            const height = endY - startY;
+            
+            if (Math.abs(width) > gridSize && Math.abs(height) > gridSize) {
+                const label = document.getElementById('labelInput').value || '';
+                const roomType = document.getElementById('roomType').value;
+                addElement({
+                    type: currentTool,
+                    x: startX,
+                    y: startY,
+                    width: width,
+                    height: height,
+                    label: label,
+                    roomType: roomType
+                });
+            }
+            
+            isDrawing = false;
+        });
+
+        function addElement(elem) {
+            elements.push(elem);
+            saveToHistory();
+            drawCanvas();
+            updateUI();
+        }
+
+        function saveToHistory() {
+            historyStep++;
+            history = history.slice(0, historyStep);
+            history.push(JSON.parse(JSON.stringify(elements)));
+            updateUndoRedo();
+        }
+
+        function undo() {
+            if (historyStep > 0) {
+                historyStep--;
+                elements = JSON.parse(JSON.stringify(history[historyStep]));
+                drawCanvas();
+                updateUI();
+                updateUndoRedo();
+            }
+        }
+
+        function redo() {
+            if (historyStep < history.length - 1) {
+                historyStep++;
+                elements = JSON.parse(JSON.stringify(history[historyStep]));
+                drawCanvas();
+                updateUI();
+                updateUndoRedo();
+            }
+        }
+
+        function updateUndoRedo() {
+            document.getElementById('undoBtn').disabled = historyStep <= 0;
+            document.getElementById('redoBtn').disabled = historyStep >= history.length - 1;
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw background image
+            if (backgroundImage) {
+                ctx.save();
+                ctx.globalAlpha = bgOpacity;
+                ctx.drawImage(backgroundImage, 0, 0);
+                ctx.restore();
+            }
+            
+            // Draw grid
+            if (showGrid) {
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 1;
+                for (let x = 0; x <= canvas.width; x += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+                for (let y = 0; y <= canvas.height; y += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+            }
+            
+            // Draw elements
+            elements.forEach(elem => drawElement(elem));
+        }
+
+        function drawElement(elem) {
+            // Color coding for different room types
+            const roomTypeColors = {
+                classroom: { fill: 'rgba(59, 130, 246, 0.4)', stroke: '#3b82f6' },        // Bright Blue
+                lab: { fill: 'rgba(16, 185, 129, 0.4)', stroke: '#10b981' },              // Green
+                computerlab: { fill: 'rgba(6, 182, 212, 0.4)', stroke: '#06b6d4' },       // Cyan
+                staffroom: { fill: 'rgba(245, 158, 11, 0.4)', stroke: '#f59e0b' },        // Orange
+                principaloffice: { fill: 'rgba(220, 38, 38, 0.4)', stroke: '#dc2626' },   // Dark Red
+                hodoffice: { fill: 'rgba(249, 115, 22, 0.4)', stroke: '#f97316' },        // Deep Orange
+                seminar: { fill: 'rgba(139, 92, 246, 0.4)', stroke: '#8b5cf6' },          // Purple
+                library: { fill: 'rgba(168, 85, 247, 0.4)', stroke: '#a855f7' },          // Light Purple
+                readingroom: { fill: 'rgba(192, 132, 252, 0.4)', stroke: '#c084fc' },     // Lighter Purple
+                cafeteria: { fill: 'rgba(236, 72, 153, 0.4)', stroke: '#ec4899' },        // Pink
+                canteen: { fill: 'rgba(244, 114, 182, 0.4)', stroke: '#f472b6' },         // Light Pink
+                washroom: { fill: 'rgba(20, 184, 166, 0.4)', stroke: '#14b8a6' },         // Teal
+                auditorium: { fill: 'rgba(239, 68, 68, 0.4)', stroke: '#ef4444' },        // Red
+                playground: { fill: 'rgba(34, 197, 94, 0.4)', stroke: '#22c55e' },        // Lime Green
+                parking: { fill: 'rgba(100, 116, 139, 0.4)', stroke: '#64748b' },         // Slate Gray
+                reception: { fill: 'rgba(14, 165, 233, 0.4)', stroke: '#0ea5e9' },        // Sky Blue
+                examhall: { fill: 'rgba(234, 179, 8, 0.4)', stroke: '#eab308' },          // Yellow
+                store: { fill: 'rgba(161, 161, 170, 0.4)', stroke: '#a1a1aa' },           // Zinc
+                other: { fill: 'rgba(148, 163, 184, 0.4)', stroke: '#94a3b8' }            // Light Gray
+            };
+            
+            const corridorColor = { fill: 'rgba(203, 213, 225, 0.4)', stroke: '#cbd5e1' };
+
+            if (elem.type === 'room') {
+                const colors = roomTypeColors[elem.roomType] || roomTypeColors.other;
+                ctx.fillStyle = colors.fill;
+                ctx.strokeStyle = colors.stroke;
+                ctx.lineWidth = 3;
+                ctx.fillRect(elem.x, elem.y, elem.width, elem.height);
+                ctx.strokeRect(elem.x, elem.y, elem.width, elem.height);
+                
+                if (elem.label) {
+                    ctx.fillStyle = colors.stroke;
+                    ctx.font = 'bold 16px DM Sans';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(elem.label, elem.x + elem.width/2, elem.y + elem.height/2);
+                }
+            } else if (elem.type === 'corridor') {
+                ctx.fillStyle = corridorColor.fill;
+                ctx.strokeStyle = corridorColor.stroke;
+                ctx.lineWidth = 3;
+                ctx.fillRect(elem.x, elem.y, elem.width, elem.height);
+                ctx.strokeRect(elem.x, elem.y, elem.width, elem.height);
+                
+                if (elem.label) {
+                    ctx.fillStyle = corridorColor.stroke;
+                    ctx.font = 'bold 16px DM Sans';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(elem.label, elem.x + elem.width/2, elem.y + elem.height/2);
+                }
+            } else if (elem.type === 'door') {
+                ctx.fillStyle = '#f59e0b';
+                ctx.strokeStyle = '#d97706';
+                ctx.lineWidth = 2;
+                ctx.fillRect(elem.x - 15, elem.y - 8, 30, 16);
+                ctx.strokeRect(elem.x - 15, elem.y - 8, 30, 16);
+                
+                if (elem.label) {
+                    ctx.fillStyle = '#000';
+                    ctx.font = '12px DM Sans';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(elem.label, elem.x, elem.y + 25);
+                }
+            } else if (elem.type === 'window') {
+                ctx.strokeStyle = '#06b6d4';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(elem.x - 15, elem.y - 5, 30, 10);
+                ctx.beginPath();
+                ctx.moveTo(elem.x, elem.y - 5);
+                ctx.lineTo(elem.x, elem.y + 5);
+                ctx.stroke();
+            } else if (elem.type === 'stairs') {
+                ctx.fillStyle = '#8b5cf6';
+                for (let i = 0; i < 6; i++) {
+                    ctx.fillRect(elem.x - 20 + i*7, elem.y - 15 + i*5, 7, 3);
+                }
+                if (elem.label) {
+                    ctx.fillStyle = '#000';
+                    ctx.font = '12px DM Sans';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(elem.label, elem.x, elem.y + 30);
+                }
+            } else if (elem.type === 'elevator') {
+                ctx.fillStyle = '#6366f1';
+                ctx.fillRect(elem.x - 15, elem.y - 15, 30, 30);
+                ctx.strokeStyle = '#4f46e5';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(elem.x - 15, elem.y - 15, 30, 30);
+                
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 16px DM Sans';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('E', elem.x, elem.y);
+            } else if (elem.type === 'marker') {
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(elem.x, elem.y, 10, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#b91c1c';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                if (elem.label) {
+                    ctx.fillStyle = '#000';
+                    ctx.font = 'bold 12px DM Sans';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(elem.label, elem.x, elem.y + 25);
+                }
+            } else if (elem.type === 'text') {
+                ctx.fillStyle = '#1e293b';
+                ctx.font = 'bold 18px DM Sans';
+                ctx.textAlign = 'center';
+                ctx.fillText(elem.label || 'Text', elem.x, elem.y);
+            }
+        }
+
+        function toggleGrid() {
+            showGrid = !showGrid;
+            drawCanvas();
+        }
+
+        function zoomIn() {
+            zoom = Math.min(zoom * 1.2, 3);
+            applyZoom();
+        }
+
+        function zoomOut() {
+            zoom = Math.max(zoom / 1.2, 0.5);
+            applyZoom();
+        }
+
+        function resetZoom() {
+            zoom = 1;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            canvas.style.transform = `scale(${zoom})`;
+            canvas.style.transformOrigin = 'top left';
+            document.getElementById('zoomLevel').textContent = Math.round(zoom * 100) + '%';
+        }
+
+        function updateUI() {
+            document.getElementById('elementCount').textContent = elements.length;
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to clear everything? This cannot be undone.')) {
+                elements = [];
+                history = [];
+                historyStep = -1;
+                saveToHistory();
+                drawCanvas();
+                updateUI();
+                showToast('Canvas cleared');
+            }
+        }
+
+        function exportAsPNG() {
+            // Create temporary canvas without grid
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Draw background
+            if (backgroundImage) {
+                tempCtx.globalAlpha = bgOpacity;
+                tempCtx.drawImage(backgroundImage, 0, 0);
+                tempCtx.globalAlpha = 1;
+            } else {
+                tempCtx.fillStyle = 'white';
+                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            }
+            
+            // Draw elements
+            const oldCtx = ctx;
+            ctx = tempCtx; // Temporarily swap context
+            elements.forEach(elem => drawElement(elem));
+            ctx = oldCtx; // Restore context
+            
+            const link = document.createElement('a');
+            link.download = 'floor-map-' + Date.now() + '.png';
+            link.href = tempCanvas.toDataURL();
+            link.click();
+            showToast('PNG exported successfully!');
+        }
+
+        function exportAsJSON() {
+            const data = {
+                width: canvas.width,
+                height: canvas.height,
+                gridSize: gridSize,
+                elements: elements,
+                metadata: {
+                    created: new Date().toISOString(),
+                    version: '1.0'
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const link = document.createElement('a');
+            link.download = 'floor-map-data-' + Date.now() + '.json';
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            showToast('JSON data exported successfully!');
+        }
+
+        function exportAsSVG() {
+            let svgContent = `<svg width="${canvas.width}" height="${canvas.height}" xmlns="http://www.w3.org/2000/svg">`;
+            svgContent += `<rect width="100%" height="100%" fill="white"/>`;
+            
+            elements.forEach(elem => {
+                if (elem.type === 'room' || elem.type === 'corridor') {
+                    const color = elem.type === 'room' ? '#2563eb' : '#8b5cf6';
+                    svgContent += `<rect x="${elem.x}" y="${elem.y}" width="${elem.width}" height="${elem.height}" fill="none" stroke="${color}" stroke-width="3"/>`;
+                    if (elem.label) {
+                        svgContent += `<text x="${elem.x + elem.width/2}" y="${elem.y + elem.height/2}" text-anchor="middle" fill="${color}" font-family="sans-serif" font-size="16" font-weight="bold">${elem.label}</text>`;
+                    }
+                }
+            });
+            
+            svgContent += '</svg>';
+            
+            const blob = new Blob([svgContent], {type: 'image/svg+xml'});
+            const link = document.createElement('a');
+            link.download = 'floor-map-' + Date.now() + '.svg';
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            showToast('SVG exported successfully!');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize history
+        saveToHistory();
+    </script>
+</body>
+</html>
