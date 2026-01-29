@@ -36,7 +36,7 @@
         }
 
         .app-container {
-            max-width: 1600px;
+            max-width: 1800px;
             margin: 0 auto;
             background: white;
             border-radius: 16px;
@@ -47,30 +47,31 @@
         .header {
             background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
             color: white;
-            padding: 30px 40px;
+            padding: 16px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .header h1 {
-            font-size: 28px;
+            font-size: 20px;
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
 
         .header-subtitle {
-            font-size: 14px;
+            font-size: 12px;
             opacity: 0.8;
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
         .main-content {
             display: grid;
-            grid-template-columns: 280px 1fr;
-            min-height: 700px;
+            grid-template-columns: 320px 1fr;
+            height: calc(100vh - 140px);
+            overflow: hidden;
         }
 
         .sidebar {
@@ -78,6 +79,7 @@
             border-right: 1px solid var(--border);
             padding: 24px;
             overflow-y: auto;
+            height: 100%;
         }
 
         .tool-section {
@@ -123,6 +125,17 @@
             border-color: var(--primary);
         }
 
+        .tool-btn.delete {
+            background: #fee2e2;
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .tool-btn.delete.active {
+            background: var(--danger);
+            color: white;
+        }
+
         .tool-icon {
             font-size: 18px;
             width: 24px;
@@ -159,24 +172,11 @@
             border-color: var(--primary);
         }
 
-        .color-picker-group {
+        .grid-controls {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
-        }
-
-        .color-option {
-            width: 100%;
-            height: 40px;
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .color-option:hover {
-            transform: scale(1.05);
-            border-color: var(--primary);
+            margin-bottom: 12px;
         }
 
         .action-btn {
@@ -200,6 +200,12 @@
             box-shadow: 0 4px 12px var(--shadow);
         }
 
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .action-btn.primary {
             background: var(--secondary);
             color: white;
@@ -220,11 +226,19 @@
             color: white;
         }
 
+        .undo-redo-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
         .canvas-area {
             padding: 24px;
             background: #f8fafc;
             position: relative;
             overflow: auto;
+            height: 100%;
         }
 
         .canvas-wrapper {
@@ -238,94 +252,74 @@
         #canvas {
             display: block;
             cursor: crosshair;
+            border-radius: 8px;
         }
 
-        .controls-bar {
-            position: sticky;
-            top: 0;
-            background: white;
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border);
+        .canvas-controls {
+            position: absolute;
+            top: 24px;
+            right: 24px;
             display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
+            gap: 8px;
             z-index: 10;
         }
 
         .control-btn {
-            padding: 8px 16px;
-            border: 2px solid var(--border);
             background: white;
-            border-radius: 6px;
+            border: 2px solid var(--border);
+            padding: 12px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 18px;
             transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            box-shadow: 0 2px 8px var(--shadow);
         }
 
         .control-btn:hover {
-            background: var(--light);
-            border-color: var(--primary);
-        }
-
-        .control-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-
-        .file-input-wrapper input[type=file] {
-            position: absolute;
-            left: -9999px;
-        }
-
-        .upload-label {
-            padding: 8px 16px;
-            border: 2px solid var(--primary);
             background: var(--primary);
             color: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .zoom-info {
+            background: white;
+            border: 2px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 8px;
             font-weight: 600;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            font-size: 14px;
+            box-shadow: 0 2px 8px var(--shadow);
         }
 
-        .upload-label:hover {
-            background: var(--primary-dark);
-            border-color: var(--primary-dark);
-        }
-
-        .status-bar {
-            background: #1e293b;
-            color: white;
-            padding: 12px 24px;
-            font-size: 12px;
-            font-family: 'JetBrains Mono', monospace;
+        .stats-bar {
+            background: white;
+            border-top: 1px solid var(--border);
+            padding: 16px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 14px;
         }
 
-        .status-item {
+        .stat-item {
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .toast {
+        .stat-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            color: var(--dark);
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        #toast {
             position: fixed;
             bottom: 24px;
             right: 24px;
@@ -333,29 +327,53 @@
             color: white;
             padding: 16px 24px;
             border-radius: 8px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             font-weight: 500;
+            transform: translateY(100px);
             opacity: 0;
-            transform: translateY(20px);
             transition: all 0.3s;
             z-index: 1000;
         }
 
-        .toast.show {
-            opacity: 1;
+        #toast.show {
             transform: translateY(0);
+            opacity: 1;
         }
 
-        @media (max-width: 1024px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
 
-            .sidebar {
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
+        .color-btn {
+            height: 40px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.05);
+            border-color: var(--primary);
+        }
+
+        .color-btn.selected {
+            border: 3px solid var(--dark);
+            transform: scale(1.1);
+        }
+
+        .grid-size-display {
+            background: #e0e7ff;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-family: 'JetBrains Mono', monospace;
         }
     </style>
 </head>
@@ -363,393 +381,218 @@
     <div class="app-container">
         <div class="header">
             <div>
-                <h1>
-                    <span>🏫</span>
-                    Floor Map Creator
-                </h1>
-                <div class="header-subtitle">Indoor Navigation System</div>
+                <h1>🗺️ Campus Map Creator</h1>
+                <div class="header-subtitle">Design your college campus layout in 2D</div>
             </div>
-        </div>
-
-        <div class="controls-bar">
-            <div class="file-input-wrapper">
-                <input type="file" id="imageUpload" accept="image/*">
-                <label for="imageUpload" class="upload-label">
-                    <span>📷</span>
-                    Upload Floor Plan
-                </label>
-            </div>
-            <button class="control-btn" onclick="undo()" id="undoBtn" disabled>
-                <span>↶</span> Undo
-            </button>
-            <button class="control-btn" onclick="redo()" id="redoBtn" disabled>
-                <span>↷</span> Redo
-            </button>
-            <button class="control-btn" onclick="toggleGrid()">
-                <span>⊞</span> Toggle Grid
-            </button>
-            <button class="control-btn" onclick="zoomIn()">
-                <span>+</span> Zoom In
-            </button>
-            <button class="control-btn" onclick="zoomOut()">
-                <span>−</span> Zoom Out
-            </button>
-            <button class="control-btn" onclick="resetZoom()">
-                <span>⊙</span> Reset Zoom
-            </button>
         </div>
 
         <div class="main-content">
             <div class="sidebar">
+                <!-- Grid Size Controls -->
                 <div class="tool-section">
-                    <h3>Drawing Tools</h3>
-                    <button class="tool-btn active" onclick="setTool('room')" id="roomBtn">
-                        <span class="tool-icon">📦</span>
-                        <span>Room</span>
-                    </button>
-                    <button class="tool-btn" onclick="setTool('corridor')" id="corridorBtn">
-                        <span class="tool-icon">➡️</span>
-                        <span>Corridor</span>
-                    </button>
-                    <button class="tool-btn" onclick="setTool('door')" id="doorBtn">
-                        <span class="tool-icon">🚪</span>
-                        <span>Door</span>
-                    </button>
-                    <button class="tool-btn" onclick="setTool('window')" id="windowBtn">
-                        <span class="tool-icon">🪟</span>
-                        <span>Window</span>
-                    </button>
-                    <button class="tool-btn" onclick="setTool('stairs')" id="stairsBtn">
-                        <span class="tool-icon">🪜</span>
-                        <span>Stairs</span>
-                    </button>
-                    <button class="tool-btn" onclick="setTool('elevator')" id="elevatorBtn">
-                        <span class="tool-icon">🛗</span>
-                        <span>Elevator</span>
-                    </button>
-                    <button class="tool-btn" onclick="setTool('marker')" id="markerBtn">
-                        <span class="tool-icon">📍</span>
-                        <span>Waypoint</span>
-                    </button>
-                    <button class="tool-btn" onclick="setTool('text')" id="textBtn">
-                        <span class="tool-icon">📝</span>
-                        <span>Label</span>
+                    <h3>📐 Canvas Size</h3>
+                    <div class="grid-size-display" id="gridDisplay">1200 × 800 px</div>
+                    <div class="grid-controls">
+                        <div class="input-group">
+                            <label>Width</label>
+                            <input type="number" id="canvasWidth" value="1200" min="800" max="5000" step="100">
+                        </div>
+                        <div class="input-group">
+                            <label>Height</label>
+                            <input type="number" id="canvasHeight" value="800" min="600" max="5000" step="100">
+                        </div>
+                    </div>
+                    <button class="action-btn secondary" onclick="updateCanvasSize()">
+                        ✨ Apply Size
                     </button>
                 </div>
 
+                <!-- Undo/Redo -->
                 <div class="tool-section">
-                    <h3>Properties</h3>
-                    <div class="input-group">
-                        <label>Label Text</label>
-                        <input type="text" id="labelInput" placeholder="e.g., Room 101">
+                    <h3>↶ History</h3>
+                    <div class="undo-redo-group">
+                        <button class="action-btn neutral" id="undoBtn" onclick="undo()" disabled>
+                            ↶ Undo
+                        </button>
+                        <button class="action-btn neutral" id="redoBtn" onclick="redo()" disabled>
+                            ↷ Redo
+                        </button>
                     </div>
-                    <div class="input-group">
+                </div>
+
+                <!-- Drawing Tools -->
+                <div class="tool-section">
+                    <h3>🛠️ Drawing Tools</h3>
+                    <button class="tool-btn active" onclick="setTool('room')" data-tool="room">
+                        <span class="tool-icon">🏛️</span> Room
+                    </button>
+                    <button class="tool-btn" onclick="setTool('building')" data-tool="building">
+                        <span class="tool-icon">🏢</span> Building
+                    </button>
+                    <button class="tool-btn" onclick="setTool('walkway')" data-tool="walkway">
+                        <span class="tool-icon">🚶</span> Walkway
+                    </button>
+                    <button class="tool-btn" onclick="setTool('corridor')" data-tool="corridor">
+                        <span class="tool-icon">🚪</span> Corridor
+                    </button>
+                    <button class="tool-btn" onclick="setTool('door')" data-tool="door">
+                        <span class="tool-icon">🚪</span> Door
+                    </button>
+                    <button class="tool-btn" onclick="setTool('window')" data-tool="window">
+                        <span class="tool-icon">🪟</span> Window
+                    </button>
+                    <button class="tool-btn" onclick="setTool('stairs')" data-tool="stairs">
+                        <span class="tool-icon">🪜</span> Stairs
+                    </button>
+                    <button class="tool-btn" onclick="setTool('elevator')" data-tool="elevator">
+                        <span class="tool-icon">🛗</span> Elevator
+                    </button>
+                    <button class="tool-btn" onclick="setTool('marker')" data-tool="marker">
+                        <span class="tool-icon">📍</span> Marker
+                    </button>
+                    <button class="tool-btn" onclick="setTool('text')" data-tool="text">
+                        <span class="tool-icon">📝</span> Text
+                    </button>
+                    <button class="tool-btn delete" onclick="setTool('delete')" data-tool="delete">
+                        <span class="tool-icon">🗑️</span> Delete (Click to Remove)
+                    </button>
+                </div>
+
+                <!-- Room/Building Properties -->
+                <div class="tool-section" id="propertiesSection">
+                    <h3>⚙️ Properties</h3>
+                    
+                    <div class="input-group" id="buildingBlockGroup" style="display: none;">
+                        <label>Building Block</label>
+                        <select id="buildingBlock">
+                            <option value="block-a">Block A</option>
+                            <option value="block-b">Block B</option>
+                            <option value="block-c">Block C</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group" id="roomTypeGroup">
                         <label>Room Type</label>
                         <select id="roomType">
                             <option value="classroom">Classroom</option>
                             <option value="lab">Laboratory</option>
-                            <option value="computerlab">Computer Lab</option>
-                            <option value="staffroom">Staff Room</option>
-                            <option value="principaloffice">Principal Office</option>
-                            <option value="hodoffice">HOD Office</option>
-                            <option value="seminar">Seminar Hall</option>
                             <option value="library">Library</option>
-                            <option value="readingroom">Reading Room</option>
                             <option value="cafeteria">Cafeteria</option>
-                            <option value="canteen">Canteen</option>
-                            <option value="washroom">Washroom</option>
+                            <option value="office">Office</option>
+                            <option value="restroom">Restroom</option>
                             <option value="auditorium">Auditorium</option>
                             <option value="playground">Playground</option>
                             <option value="parking">Parking</option>
                             <option value="reception">Reception</option>
                             <option value="examhall">Exam Hall</option>
-                            <option value="store">Store Room</option>
+                            <option value="store">Store</option>
                             <option value="other">Other</option>
                         </select>
                     </div>
-                </div>
 
-                <div class="tool-section">
-                    <h3>Settings</h3>
                     <div class="input-group">
-                        <label>Grid Size (px)</label>
-                        <input type="number" id="gridSize" value="20" min="10" max="50">
-                    </div>
-                    <div class="input-group">
-                        <label>Background Opacity</label>
-                        <input type="range" id="bgOpacity" min="0" max="100" value="50" style="width: 100%;">
+                        <label>Label</label>
+                        <input type="text" id="elementLabel" placeholder="Enter label...">
                     </div>
                 </div>
 
+                <!-- Actions -->
                 <div class="tool-section">
-                    <h3>Color Legend</h3>
-                    <div style="font-size: 11px; line-height: 1.6; max-height: 300px; overflow-y: auto;">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(59, 130, 246, 0.5); border: 2px solid #3b82f6; border-radius: 3px;"></div>
-                            <span>Classroom</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(16, 185, 129, 0.5); border: 2px solid #10b981; border-radius: 3px;"></div>
-                            <span>Laboratory</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(6, 182, 212, 0.5); border: 2px solid #06b6d4; border-radius: 3px;"></div>
-                            <span>Computer Lab</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(245, 158, 11, 0.5); border: 2px solid #f59e0b; border-radius: 3px;"></div>
-                            <span>Staff Room</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(220, 38, 38, 0.5); border: 2px solid #dc2626; border-radius: 3px;"></div>
-                            <span>Principal Office</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(249, 115, 22, 0.5); border: 2px solid #f97316; border-radius: 3px;"></div>
-                            <span>HOD Office</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(139, 92, 246, 0.5); border: 2px solid #8b5cf6; border-radius: 3px;"></div>
-                            <span>Seminar Hall</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(168, 85, 247, 0.5); border: 2px solid #a855f7; border-radius: 3px;"></div>
-                            <span>Library</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(192, 132, 252, 0.5); border: 2px solid #c084fc; border-radius: 3px;"></div>
-                            <span>Reading Room</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(236, 72, 153, 0.5); border: 2px solid #ec4899; border-radius: 3px;"></div>
-                            <span>Cafeteria</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(244, 114, 182, 0.5); border: 2px solid #f472b6; border-radius: 3px;"></div>
-                            <span>Canteen</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(20, 184, 166, 0.5); border: 2px solid #14b8a6; border-radius: 3px;"></div>
-                            <span>Washroom</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(239, 68, 68, 0.5); border: 2px solid #ef4444; border-radius: 3px;"></div>
-                            <span>Auditorium</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(34, 197, 94, 0.5); border: 2px solid #22c55e; border-radius: 3px;"></div>
-                            <span>Playground</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(100, 116, 139, 0.5); border: 2px solid #64748b; border-radius: 3px;"></div>
-                            <span>Parking</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(14, 165, 233, 0.5); border: 2px solid #0ea5e9; border-radius: 3px;"></div>
-                            <span>Reception</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(234, 179, 8, 0.5); border: 2px solid #eab308; border-radius: 3px;"></div>
-                            <span>Exam Hall</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <div style="width: 18px; height: 18px; background: rgba(161, 161, 170, 0.5); border: 2px solid #a1a1aa; border-radius: 3px;"></div>
-                            <span>Store Room</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tool-section">
-                    <h3>Actions</h3>
+                    <h3>💾 Actions</h3>
                     <button class="action-btn primary" onclick="exportAsPNG()">
-                        <span>💾</span> Export as PNG
+                        📥 Export as PNG
                     </button>
                     <button class="action-btn secondary" onclick="exportAsJSON()">
-                        <span>📄</span> Export as JSON
+                        💾 Export as JSON
                     </button>
                     <button class="action-btn neutral" onclick="exportAsSVG()">
-                        <span>🎨</span> Export as SVG
+                        🎨 Export as SVG
                     </button>
                     <button class="action-btn danger" onclick="clearAll()">
-                        <span>🗑️</span> Clear All
+                        🗑️ Clear All
                     </button>
                 </div>
             </div>
 
             <div class="canvas-area">
-                <div class="canvas-wrapper" id="canvasWrapper">
-                    <canvas id="canvas" width="1400" height="900"></canvas>
+                <div class="canvas-controls">
+                    <button class="control-btn" onclick="toggleGrid()" title="Toggle Grid">
+                        📏
+                    </button>
+                    <button class="control-btn" onclick="zoomIn()" title="Zoom In">
+                        🔍+
+                    </button>
+                    <button class="control-btn" onclick="zoomOut()" title="Zoom Out">
+                        🔍−
+                    </button>
+                    <button class="control-btn" onclick="resetZoom()" title="Reset Zoom">
+                        ⟲
+                    </button>
+                    <div class="zoom-info">
+                        <span id="zoomLevel">100%</span>
+                    </div>
+                </div>
+                <div class="canvas-wrapper">
+                    <canvas id="canvas"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="status-bar">
-            <div class="status-item">
-                <span>Elements: <span id="elementCount">0</span></span>
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-label">Elements:</span>
+                <span class="stat-value" id="elementCount">0</span>
             </div>
-            <div class="status-item">
-                <span>Tool: <span id="currentTool">Room</span></span>
+            <div class="stat-item">
+                <span class="stat-label">Tool:</span>
+                <span class="stat-value" id="currentTool">Room</span>
             </div>
-            <div class="status-item">
-                <span>Zoom: <span id="zoomLevel">100%</span></span>
+            <div class="stat-item">
+                <span class="stat-label">Grid:</span>
+                <span class="stat-value" id="gridStatus">ON</span>
             </div>
         </div>
     </div>
 
-    <div class="toast" id="toast"></div>
+    <div id="toast"></div>
 
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         
+        let canvasWidth = 1200;
+        let canvasHeight = 800;
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        
+        let elements = [];
         let currentTool = 'room';
         let isDrawing = false;
         let startX, startY;
-        let elements = [];
-        let history = [];
-        let historyStep = -1;
-        let gridSize = 20;
         let showGrid = true;
         let zoom = 1;
-        let backgroundImage = null;
-        let bgOpacity = 0.5;
-
-        // Initialize
-        drawCanvas();
-
-        // Image upload
-        document.getElementById('imageUpload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = function() {
-                        backgroundImage = img;
-                        // Resize canvas to match image
-                        canvas.width = Math.max(img.width, 1400);
-                        canvas.height = Math.max(img.height, 900);
-                        drawCanvas();
-                        showToast('Background image loaded successfully!');
-                    };
-                    img.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Background opacity
-        document.getElementById('bgOpacity').addEventListener('input', function(e) {
-            bgOpacity = e.target.value / 100;
-            drawCanvas();
-        });
-
-        // Grid size
-        document.getElementById('gridSize').addEventListener('change', function(e) {
-            gridSize = parseInt(e.target.value);
-            drawCanvas();
-        });
-
-        function snapToGrid(value) {
-            return Math.round(value / gridSize) * gridSize;
-        }
-
-        function setTool(tool) {
-            currentTool = tool;
-            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(tool + 'Btn').classList.add('active');
-            document.getElementById('currentTool').textContent = tool.charAt(0).toUpperCase() + tool.slice(1);
-        }
-
-        function getMousePos(e) {
-            const rect = canvas.getBoundingClientRect();
-            return {
-                x: (e.clientX - rect.left) / zoom,
-                y: (e.clientY - rect.top) / zoom
-            };
-        }
-
-        canvas.addEventListener('mousedown', (e) => {
-            const pos = getMousePos(e);
-            startX = snapToGrid(pos.x);
-            startY = snapToGrid(pos.y);
-            
-            if (['door', 'window', 'stairs', 'elevator', 'marker', 'text'].includes(currentTool)) {
-                const label = document.getElementById('labelInput').value || '';
-                const roomType = document.getElementById('roomType').value;
-                addElement({
-                    type: currentTool,
-                    x: startX,
-                    y: startY,
-                    label: label,
-                    roomType: roomType
-                });
-            } else {
-                isDrawing = true;
-            }
-        });
-
-        canvas.addEventListener('mousemove', (e) => {
-            if (!isDrawing) return;
-            
-            const pos = getMousePos(e);
-            const currentX = snapToGrid(pos.x);
-            const currentY = snapToGrid(pos.y);
-            
-            drawCanvas();
-            
-            // Preview
-            ctx.save();
-            ctx.globalAlpha = 0.5;
-            drawElement({
-                type: currentTool,
-                x: startX,
-                y: startY,
-                width: currentX - startX,
-                height: currentY - startY
-            });
-            ctx.restore();
-        });
-
-        canvas.addEventListener('mouseup', (e) => {
-            if (!isDrawing) return;
-            
-            const pos = getMousePos(e);
-            const endX = snapToGrid(pos.x);
-            const endY = snapToGrid(pos.y);
-            
-            const width = endX - startX;
-            const height = endY - startY;
-            
-            if (Math.abs(width) > gridSize && Math.abs(height) > gridSize) {
-                const label = document.getElementById('labelInput').value || '';
-                const roomType = document.getElementById('roomType').value;
-                addElement({
-                    type: currentTool,
-                    x: startX,
-                    y: startY,
-                    width: width,
-                    height: height,
-                    label: label,
-                    roomType: roomType
-                });
-            }
-            
-            isDrawing = false;
-        });
-
-        function addElement(elem) {
-            elements.push(elem);
-            saveToHistory();
-            drawCanvas();
-            updateUI();
-        }
+        let gridSize = 20;
+        
+        // History management for undo/redo
+        let history = [];
+        let historyStep = -1;
+        const MAX_HISTORY = 50;
 
         function saveToHistory() {
-            historyStep++;
-            history = history.slice(0, historyStep);
+            // Remove any redo states
+            history = history.slice(0, historyStep + 1);
+            
+            // Add current state
             history.push(JSON.parse(JSON.stringify(elements)));
-            updateUndoRedo();
+            
+            // Limit history size
+            if (history.length > MAX_HISTORY) {
+                history.shift();
+            } else {
+                historyStep++;
+            }
+            
+            updateHistoryButtons();
         }
 
         function undo() {
@@ -758,7 +601,8 @@
                 elements = JSON.parse(JSON.stringify(history[historyStep]));
                 drawCanvas();
                 updateUI();
-                updateUndoRedo();
+                updateHistoryButtons();
+                showToast('Undo performed');
             }
         }
 
@@ -768,37 +612,192 @@
                 elements = JSON.parse(JSON.stringify(history[historyStep]));
                 drawCanvas();
                 updateUI();
-                updateUndoRedo();
+                updateHistoryButtons();
+                showToast('Redo performed');
             }
         }
 
-        function updateUndoRedo() {
+        function updateHistoryButtons() {
             document.getElementById('undoBtn').disabled = historyStep <= 0;
             document.getElementById('redoBtn').disabled = historyStep >= history.length - 1;
+        }
+
+        function updateCanvasSize() {
+            const newWidth = parseInt(document.getElementById('canvasWidth').value);
+            const newHeight = parseInt(document.getElementById('canvasHeight').value);
+            
+            if (newWidth < 800 || newWidth > 5000 || newHeight < 600 || newHeight > 5000) {
+                showToast('Canvas size must be between 800-5000 (width) and 600-5000 (height)');
+                return;
+            }
+            
+            canvasWidth = newWidth;
+            canvasHeight = newHeight;
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            
+            document.getElementById('gridDisplay').textContent = `${canvasWidth} × ${canvasHeight} px`;
+            drawCanvas();
+            showToast(`Canvas resized to ${canvasWidth} × ${canvasHeight}`);
+        }
+
+        function setTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+            document.getElementById('currentTool').textContent = tool.charAt(0).toUpperCase() + tool.slice(1);
+            
+            // Show/hide building block options
+            const buildingBlockGroup = document.getElementById('buildingBlockGroup');
+            const roomTypeGroup = document.getElementById('roomTypeGroup');
+            
+            if (tool === 'building') {
+                buildingBlockGroup.style.display = 'block';
+                roomTypeGroup.style.display = 'none';
+            } else if (tool === 'room' || tool === 'walkway') {
+                buildingBlockGroup.style.display = 'none';
+                roomTypeGroup.style.display = 'block';
+            } else {
+                buildingBlockGroup.style.display = 'none';
+                roomTypeGroup.style.display = tool === 'corridor' ? 'none' : 'none';
+            }
+            
+            // Change cursor based on tool
+            canvas.style.cursor = tool === 'delete' ? 'not-allowed' : 'crosshair';
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / zoom;
+            const y = (e.clientY - rect.top) / zoom;
+            
+            if (currentTool === 'delete') {
+                // Delete mode - find and remove clicked element
+                deleteElementAt(x, y);
+                return;
+            }
+            
+            isDrawing = true;
+            startX = x;
+            startY = y;
+            
+            if (['door', 'window', 'elevator', 'marker', 'text'].includes(currentTool)) {
+                addElement(x, y);
+                isDrawing = false;
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / zoom;
+            const y = (e.clientY - rect.top) / zoom;
+            
+            drawCanvas();
+            
+            // Draw preview
+            ctx.strokeStyle = 'rgba(37, 99, 235, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.strokeRect(startX, startY, x - startX, y - startY);
+            ctx.setLineDash([]);
+        });
+
+        canvas.addEventListener('mouseup', (e) => {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / zoom;
+            const y = (e.clientY - rect.top) / zoom;
+            
+            const width = x - startX;
+            const height = y - startY;
+            
+            if (Math.abs(width) > 10 && Math.abs(height) > 10) {
+                addElement(startX, startY, width, height);
+            }
+            
+            isDrawing = false;
+            drawCanvas();
+        });
+
+        function deleteElementAt(x, y) {
+            // Find element at clicked position (reverse order to get topmost)
+            for (let i = elements.length - 1; i >= 0; i--) {
+                const elem = elements[i];
+                
+                if (elem.type === 'room' || elem.type === 'corridor' || elem.type === 'building' || elem.type === 'walkway') {
+                    if (x >= elem.x && x <= elem.x + elem.width &&
+                        y >= elem.y && y <= elem.y + elem.height) {
+                        elements.splice(i, 1);
+                        saveToHistory();
+                        drawCanvas();
+                        updateUI();
+                        showToast('Element deleted');
+                        return;
+                    }
+                } else {
+                    // For point elements (door, window, etc.)
+                    const distance = Math.sqrt(Math.pow(x - elem.x, 2) + Math.pow(y - elem.y, 2));
+                    if (distance < 30) {
+                        elements.splice(i, 1);
+                        saveToHistory();
+                        drawCanvas();
+                        updateUI();
+                        showToast('Element deleted');
+                        return;
+                    }
+                }
+            }
+            
+            showToast('No element found at this location');
+        }
+
+        function addElement(x, y, width = 0, height = 0) {
+            const label = document.getElementById('elementLabel').value;
+            const roomType = document.getElementById('roomType').value;
+            const buildingBlock = document.getElementById('buildingBlock').value;
+            
+            const element = {
+                type: currentTool,
+                x: width < 0 ? x + width : x,
+                y: height < 0 ? y + height : y,
+                width: Math.abs(width),
+                height: Math.abs(height),
+                label: label,
+                roomType: currentTool === 'room' || currentTool === 'walkway' ? roomType : null,
+                buildingBlock: currentTool === 'building' ? buildingBlock : null
+            };
+            
+            elements.push(element);
+            saveToHistory();
+            drawCanvas();
+            updateUI();
         }
 
         function drawCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Draw background image
-            if (backgroundImage) {
-                ctx.save();
-                ctx.globalAlpha = bgOpacity;
-                ctx.drawImage(backgroundImage, 0, 0);
-                ctx.restore();
-            }
+            // Draw background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             // Draw grid
             if (showGrid) {
                 ctx.strokeStyle = '#e2e8f0';
                 ctx.lineWidth = 1;
-                for (let x = 0; x <= canvas.width; x += gridSize) {
+                
+                for (let x = 0; x < canvas.width; x += gridSize) {
                     ctx.beginPath();
                     ctx.moveTo(x, 0);
                     ctx.lineTo(x, canvas.height);
                     ctx.stroke();
                 }
-                for (let y = 0; y <= canvas.height; y += gridSize) {
+                
+                for (let y = 0; y < canvas.height; y += gridSize) {
                     ctx.beginPath();
                     ctx.moveTo(0, y);
                     ctx.lineTo(canvas.width, y);
@@ -806,35 +805,35 @@
                 }
             }
             
-            // Draw elements
+            // Draw all elements
             elements.forEach(elem => drawElement(elem));
         }
 
         function drawElement(elem) {
-            // Color coding for different room types
             const roomTypeColors = {
-                classroom: { fill: 'rgba(59, 130, 246, 0.4)', stroke: '#3b82f6' },        // Bright Blue
-                lab: { fill: 'rgba(16, 185, 129, 0.4)', stroke: '#10b981' },              // Green
-                computerlab: { fill: 'rgba(6, 182, 212, 0.4)', stroke: '#06b6d4' },       // Cyan
-                staffroom: { fill: 'rgba(245, 158, 11, 0.4)', stroke: '#f59e0b' },        // Orange
-                principaloffice: { fill: 'rgba(220, 38, 38, 0.4)', stroke: '#dc2626' },   // Dark Red
-                hodoffice: { fill: 'rgba(249, 115, 22, 0.4)', stroke: '#f97316' },        // Deep Orange
-                seminar: { fill: 'rgba(139, 92, 246, 0.4)', stroke: '#8b5cf6' },          // Purple
-                library: { fill: 'rgba(168, 85, 247, 0.4)', stroke: '#a855f7' },          // Light Purple
-                readingroom: { fill: 'rgba(192, 132, 252, 0.4)', stroke: '#c084fc' },     // Lighter Purple
-                cafeteria: { fill: 'rgba(236, 72, 153, 0.4)', stroke: '#ec4899' },        // Pink
-                canteen: { fill: 'rgba(244, 114, 182, 0.4)', stroke: '#f472b6' },         // Light Pink
-                washroom: { fill: 'rgba(20, 184, 166, 0.4)', stroke: '#14b8a6' },         // Teal
-                auditorium: { fill: 'rgba(239, 68, 68, 0.4)', stroke: '#ef4444' },        // Red
-                playground: { fill: 'rgba(34, 197, 94, 0.4)', stroke: '#22c55e' },        // Lime Green
-                parking: { fill: 'rgba(100, 116, 139, 0.4)', stroke: '#64748b' },         // Slate Gray
-                reception: { fill: 'rgba(14, 165, 233, 0.4)', stroke: '#0ea5e9' },        // Sky Blue
-                examhall: { fill: 'rgba(234, 179, 8, 0.4)', stroke: '#eab308' },          // Yellow
-                store: { fill: 'rgba(161, 161, 170, 0.4)', stroke: '#a1a1aa' },           // Zinc
-                other: { fill: 'rgba(148, 163, 184, 0.4)', stroke: '#94a3b8' }            // Light Gray
+                classroom: { fill: 'rgba(59, 130, 246, 0.4)', stroke: '#3b82f6' },
+                lab: { fill: 'rgba(139, 92, 246, 0.4)', stroke: '#8b5cf6' },
+                library: { fill: 'rgba(236, 72, 153, 0.4)', stroke: '#ec4899' },
+                cafeteria: { fill: 'rgba(251, 146, 60, 0.4)', stroke: '#fb923c' },
+                office: { fill: 'rgba(14, 165, 233, 0.4)', stroke: '#0ea5e9' },
+                restroom: { fill: 'rgba(20, 184, 166, 0.4)', stroke: '#14b8a6' },
+                auditorium: { fill: 'rgba(239, 68, 68, 0.4)', stroke: '#ef4444' },
+                playground: { fill: 'rgba(34, 197, 94, 0.4)', stroke: '#22c55e' },
+                parking: { fill: 'rgba(100, 116, 139, 0.4)', stroke: '#64748b' },
+                reception: { fill: 'rgba(14, 165, 233, 0.4)', stroke: '#0ea5e9' },
+                examhall: { fill: 'rgba(234, 179, 8, 0.4)', stroke: '#eab308' },
+                store: { fill: 'rgba(161, 161, 170, 0.4)', stroke: '#a1a1aa' },
+                other: { fill: 'rgba(148, 163, 184, 0.4)', stroke: '#94a3b8' }
             };
             
             const corridorColor = { fill: 'rgba(203, 213, 225, 0.4)', stroke: '#cbd5e1' };
+            const walkwayColor = { fill: 'rgba(254, 240, 138, 0.5)', stroke: '#fbbf24' };
+            
+            const buildingColors = {
+                'block-a': { fill: 'rgba(99, 102, 241, 0.3)', stroke: '#6366f1' },
+                'block-b': { fill: 'rgba(168, 85, 247, 0.3)', stroke: '#a855f7' },
+                'block-c': { fill: 'rgba(236, 72, 153, 0.3)', stroke: '#ec4899' }
+            };
 
             if (elem.type === 'room') {
                 const colors = roomTypeColors[elem.roomType] || roomTypeColors.other;
@@ -846,6 +845,42 @@
                 
                 if (elem.label) {
                     ctx.fillStyle = colors.stroke;
+                    ctx.font = 'bold 16px DM Sans';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(elem.label, elem.x + elem.width/2, elem.y + elem.height/2);
+                }
+            } else if (elem.type === 'building') {
+                const colors = buildingColors[elem.buildingBlock] || buildingColors['block-a'];
+                ctx.fillStyle = colors.fill;
+                ctx.strokeStyle = colors.stroke;
+                ctx.lineWidth = 5;
+                ctx.fillRect(elem.x, elem.y, elem.width, elem.height);
+                ctx.strokeRect(elem.x, elem.y, elem.width, elem.height);
+                
+                // Draw building label
+                ctx.fillStyle = colors.stroke;
+                ctx.font = 'bold 24px DM Sans';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const blockName = elem.buildingBlock ? elem.buildingBlock.replace('-', ' ').toUpperCase() : 'BUILDING';
+                ctx.fillText(blockName, elem.x + elem.width/2, elem.y + elem.height/2 - 15);
+                
+                if (elem.label) {
+                    ctx.font = 'bold 14px DM Sans';
+                    ctx.fillText(elem.label, elem.x + elem.width/2, elem.y + elem.height/2 + 10);
+                }
+            } else if (elem.type === 'walkway') {
+                ctx.fillStyle = walkwayColor.fill;
+                ctx.strokeStyle = walkwayColor.stroke;
+                ctx.lineWidth = 3;
+                ctx.setLineDash([10, 5]);
+                ctx.fillRect(elem.x, elem.y, elem.width, elem.height);
+                ctx.strokeRect(elem.x, elem.y, elem.width, elem.height);
+                ctx.setLineDash([]);
+                
+                if (elem.label) {
+                    ctx.fillStyle = walkwayColor.stroke;
                     ctx.font = 'bold 16px DM Sans';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
@@ -887,15 +922,26 @@
                 ctx.lineTo(elem.x, elem.y + 5);
                 ctx.stroke();
             } else if (elem.type === 'stairs') {
+                ctx.fillStyle = 'rgba(139, 92, 246, 0.4)';
+                ctx.strokeStyle = '#8b5cf6';
+                ctx.lineWidth = 3;
+                ctx.fillRect(elem.x, elem.y, elem.width, elem.height);
+                ctx.strokeRect(elem.x, elem.y, elem.width, elem.height);
+                
+                // Draw stair steps pattern inside the box
                 ctx.fillStyle = '#8b5cf6';
-                for (let i = 0; i < 6; i++) {
-                    ctx.fillRect(elem.x - 20 + i*7, elem.y - 15 + i*5, 7, 3);
+                const numSteps = Math.min(8, Math.floor(elem.height / 8));
+                const stepHeight = elem.height / numSteps;
+                for (let i = 0; i < numSteps; i++) {
+                    ctx.fillRect(elem.x + 5, elem.y + i * stepHeight + 2, elem.width - 10, stepHeight - 4);
                 }
+                
                 if (elem.label) {
-                    ctx.fillStyle = '#000';
-                    ctx.font = '12px DM Sans';
+                    ctx.fillStyle = '#8b5cf6';
+                    ctx.font = 'bold 16px DM Sans';
                     ctx.textAlign = 'center';
-                    ctx.fillText(elem.label, elem.x, elem.y + 30);
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(elem.label, elem.x + elem.width/2, elem.y + elem.height/2);
                 }
             } else if (elem.type === 'elevator') {
                 ctx.fillStyle = '#6366f1';
@@ -934,6 +980,7 @@
 
         function toggleGrid() {
             showGrid = !showGrid;
+            document.getElementById('gridStatus').textContent = showGrid ? 'ON' : 'OFF';
             drawCanvas();
         }
 
@@ -975,30 +1022,21 @@
         }
 
         function exportAsPNG() {
-            // Create temporary canvas without grid
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width = canvas.width;
             tempCanvas.height = canvas.height;
             const tempCtx = tempCanvas.getContext('2d');
             
-            // Draw background
-            if (backgroundImage) {
-                tempCtx.globalAlpha = bgOpacity;
-                tempCtx.drawImage(backgroundImage, 0, 0);
-                tempCtx.globalAlpha = 1;
-            } else {
-                tempCtx.fillStyle = 'white';
-                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-            }
+            tempCtx.fillStyle = 'white';
+            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
             
-            // Draw elements
             const oldCtx = ctx;
-            ctx = tempCtx; // Temporarily swap context
+            ctx = tempCtx;
             elements.forEach(elem => drawElement(elem));
-            ctx = oldCtx; // Restore context
+            ctx = oldCtx;
             
             const link = document.createElement('a');
-            link.download = 'floor-map-' + Date.now() + '.png';
+            link.download = 'campus-map-' + Date.now() + '.png';
             link.href = tempCanvas.toDataURL();
             link.click();
             showToast('PNG exported successfully!');
@@ -1012,13 +1050,14 @@
                 elements: elements,
                 metadata: {
                     created: new Date().toISOString(),
-                    version: '1.0'
+                    version: '2.0',
+                    type: 'campus-map'
                 }
             };
             
             const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
             const link = document.createElement('a');
-            link.download = 'floor-map-data-' + Date.now() + '.json';
+            link.download = 'campus-map-data-' + Date.now() + '.json';
             link.href = URL.createObjectURL(blob);
             link.click();
             showToast('JSON data exported successfully!');
@@ -1029,8 +1068,10 @@
             svgContent += `<rect width="100%" height="100%" fill="white"/>`;
             
             elements.forEach(elem => {
-                if (elem.type === 'room' || elem.type === 'corridor') {
-                    const color = elem.type === 'room' ? '#2563eb' : '#8b5cf6';
+                if (elem.type === 'room' || elem.type === 'corridor' || elem.type === 'building' || elem.type === 'walkway') {
+                    const color = elem.type === 'building' ? '#6366f1' : 
+                                  elem.type === 'walkway' ? '#fbbf24' :
+                                  elem.type === 'room' ? '#3b82f6' : '#8b5cf6';
                     svgContent += `<rect x="${elem.x}" y="${elem.y}" width="${elem.width}" height="${elem.height}" fill="none" stroke="${color}" stroke-width="3"/>`;
                     if (elem.label) {
                         svgContent += `<text x="${elem.x + elem.width/2}" y="${elem.y + elem.height/2}" text-anchor="middle" fill="${color}" font-family="sans-serif" font-size="16" font-weight="bold">${elem.label}</text>`;
@@ -1042,7 +1083,7 @@
             
             const blob = new Blob([svgContent], {type: 'image/svg+xml'});
             const link = document.createElement('a');
-            link.download = 'floor-map-' + Date.now() + '.svg';
+            link.download = 'campus-map-' + Date.now() + '.svg';
             link.href = URL.createObjectURL(blob);
             link.click();
             showToast('SVG exported successfully!');
@@ -1057,8 +1098,10 @@
             }, 3000);
         }
 
-        // Initialize history
+        // Initialize
         saveToHistory();
+        drawCanvas();
+        updateUI();
     </script>
 </body>
 </html>
