@@ -505,6 +505,10 @@
                     <button class="action-btn secondary" onclick="exportAsJSON()">
                         💾 Export as JSON
                     </button>
+                    <button class="action-btn secondary" onclick="document.getElementById('importFile').click()">
+                        📂 Import JSON
+                    </button>
+                    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importFromJSON(event)">
                     <button class="action-btn neutral" onclick="exportAsSVG()">
                         🎨 Export as SVG
                     </button>
@@ -900,6 +904,28 @@
                     ctx.textBaseline = 'middle';
                     ctx.fillText(elem.label, elem.x + elem.width/2, elem.y + elem.height/2);
                 }
+            } else if (elem.type === 'stairs') {
+                ctx.fillStyle = 'rgba(139, 92, 246, 0.4)';
+                ctx.strokeStyle = '#8b5cf6';
+                ctx.lineWidth = 3;
+                ctx.fillRect(elem.x, elem.y, elem.width, elem.height);
+                ctx.strokeRect(elem.x, elem.y, elem.width, elem.height);
+                
+                // Draw stair steps
+                ctx.fillStyle = '#8b5cf6';
+                const numSteps = Math.min(8, Math.floor(elem.height / 8));
+                const stepHeight = elem.height / numSteps;
+                for (let i = 0; i < numSteps; i++) {
+                    ctx.fillRect(elem.x + 5, elem.y + i * stepHeight + 2, elem.width - 10, stepHeight - 4);
+                }
+                
+                if (elem.label) {
+                    ctx.fillStyle = '#8b5cf6';
+                    ctx.font = 'bold 16px DM Sans';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(elem.label, elem.x + elem.width/2, elem.y + elem.height/2);
+                }
             } else if (elem.type === 'door') {
                 ctx.fillStyle = '#f59e0b';
                 ctx.strokeStyle = '#d97706';
@@ -921,28 +947,6 @@
                 ctx.moveTo(elem.x, elem.y - 5);
                 ctx.lineTo(elem.x, elem.y + 5);
                 ctx.stroke();
-            } else if (elem.type === 'stairs') {
-                ctx.fillStyle = 'rgba(139, 92, 246, 0.4)';
-                ctx.strokeStyle = '#8b5cf6';
-                ctx.lineWidth = 3;
-                ctx.fillRect(elem.x, elem.y, elem.width, elem.height);
-                ctx.strokeRect(elem.x, elem.y, elem.width, elem.height);
-                
-                // Draw stair steps pattern inside the box
-                ctx.fillStyle = '#8b5cf6';
-                const numSteps = Math.min(8, Math.floor(elem.height / 8));
-                const stepHeight = elem.height / numSteps;
-                for (let i = 0; i < numSteps; i++) {
-                    ctx.fillRect(elem.x + 5, elem.y + i * stepHeight + 2, elem.width - 10, stepHeight - 4);
-                }
-                
-                if (elem.label) {
-                    ctx.fillStyle = '#8b5cf6';
-                    ctx.font = 'bold 16px DM Sans';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText(elem.label, elem.x + elem.width/2, elem.y + elem.height/2);
-                }
             } else if (elem.type === 'elevator') {
                 ctx.fillStyle = '#6366f1';
                 ctx.fillRect(elem.x - 15, elem.y - 15, 30, 30);
@@ -1022,24 +1026,40 @@
         }
 
         function exportAsPNG() {
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = canvas.width;
-            tempCanvas.height = canvas.height;
-            const tempCtx = tempCanvas.getContext('2d');
+            // Create a temporary canvas for export
+            const exportCanvas = document.createElement('canvas');
+            exportCanvas.width = canvas.width;
+            exportCanvas.height = canvas.height;
+            const exportCtx = exportCanvas.getContext('2d');
             
-            tempCtx.fillStyle = 'white';
-            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            // Draw white background
+            exportCtx.fillStyle = 'white';
+            exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
             
-            const oldCtx = ctx;
-            ctx = tempCtx;
-            elements.forEach(elem => drawElement(elem));
-            ctx = oldCtx;
+            // Draw all elements using the export context
+            elements.forEach(elem => {
+                // We need to use the exportCtx instead of the global ctx
+                const originalCtx = window.ctx;
+                window.ctx = exportCtx;
+                drawElement(elem);
+                window.ctx = originalCtx;
+            });
             
-            const link = document.createElement('a');
-            link.download = 'campus-map-' + Date.now() + '.png';
-            link.href = tempCanvas.toDataURL();
-            link.click();
-            showToast('PNG exported successfully!');
+            // Create and trigger download
+            try {
+                exportCanvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = 'campus-map-' + Date.now() + '.png';
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    showToast('PNG exported successfully!');
+                }, 'image/png');
+            } catch (error) {
+                console.error('Export error:', error);
+                showToast('Error exporting PNG. Please try again.');
+            }
         }
 
         function exportAsJSON() {
@@ -1061,6 +1081,65 @@
             link.href = URL.createObjectURL(blob);
             link.click();
             showToast('JSON data exported successfully!');
+        }
+
+        function importFromJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    // Validate the data
+                    if (!data.elements || !Array.isArray(data.elements)) {
+                        throw new Error('Invalid JSON format');
+                    }
+                    
+                    // Restore canvas size if available
+                    if (data.width && data.height) {
+                        canvasWidth = data.width;
+                        canvasHeight = data.height;
+                        canvas.width = canvasWidth;
+                        canvas.height = canvasHeight;
+                        document.getElementById('canvasWidth').value = canvasWidth;
+                        document.getElementById('canvasHeight').value = canvasHeight;
+                        document.getElementById('gridDisplay').textContent = `${canvasWidth} × ${canvasHeight} px`;
+                    }
+                    
+                    // Restore grid size if available
+                    if (data.gridSize) {
+                        gridSize = data.gridSize;
+                    }
+                    
+                    // Restore elements
+                    elements = data.elements;
+                    
+                    // Reset history and save new state
+                    history = [];
+                    historyStep = -1;
+                    saveToHistory();
+                    
+                    // Redraw and update UI
+                    drawCanvas();
+                    updateUI();
+                    
+                    showToast(`Map loaded successfully! (${elements.length} elements)`);
+                } catch (error) {
+                    console.error('Import error:', error);
+                    showToast('Error loading JSON file. Please check the file format.');
+                }
+            };
+            
+            reader.onerror = function() {
+                showToast('Error reading file. Please try again.');
+            };
+            
+            reader.readAsText(file);
+            
+            // Reset the file input so the same file can be loaded again
+            event.target.value = '';
         }
 
         function exportAsSVG() {
@@ -1105,3 +1184,4 @@
     </script>
 </body>
 </html>
+
