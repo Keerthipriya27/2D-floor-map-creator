@@ -407,6 +407,17 @@
                     </button>
                 </div>
 
+                <!-- Background Image Opacity -->
+                <div class="tool-section" id="bgOpacitySection" style="display: none;">
+                    <h3>🖼️ Background Opacity</h3>
+                    <div class="input-group">
+                        <label>Opacity: <span id="opacityValue">50%</span></label>
+                        <input type="range" id="bgOpacity" min="0" max="100" value="50" 
+                               oninput="updateBackgroundOpacity(this.value)" 
+                               style="width: 100%; cursor: pointer;">
+                    </div>
+                </div>
+
                 <!-- Undo/Redo -->
                 <div class="tool-section">
                     <h3>↶ History</h3>
@@ -435,6 +446,12 @@
                     <button class="tool-btn" onclick="setTool('corridor')" data-tool="corridor">
                         <span class="tool-icon">🚪</span> Corridor
                     </button>
+                    <button class="tool-btn" onclick="setTool('lawn')" data-tool="lawn">
+                        <span class="tool-icon">🌿</span> Lawn
+                    </button>
+                    <button class="tool-btn" onclick="setTool('garden')" data-tool="garden">
+                        <span class="tool-icon">🌳</span> Garden
+                    </button>
                     <button class="tool-btn" onclick="setTool('door')" data-tool="door">
                         <span class="tool-icon">🚪</span> Door
                     </button>
@@ -446,6 +463,9 @@
                     </button>
                     <button class="tool-btn" onclick="setTool('elevator')" data-tool="elevator">
                         <span class="tool-icon">🛗</span> Elevator
+                    </button>
+                    <button class="tool-btn" onclick="setTool('tree')" data-tool="tree">
+                        <span class="tool-icon">🌲</span> Tree
                     </button>
                     <button class="tool-btn" onclick="setTool('marker')" data-tool="marker">
                         <span class="tool-icon">📍</span> Marker
@@ -499,6 +519,13 @@
                 <!-- Actions -->
                 <div class="tool-section">
                     <h3>💾 Actions</h3>
+                    <button class="action-btn secondary" onclick="document.getElementById('backgroundImageFile').click()">
+                        🖼️ Set Background Image
+                    </button>
+                    <input type="file" id="backgroundImageFile" accept="image/*" style="display: none;" onchange="loadBackgroundImage(event)">
+                    <button class="action-btn neutral" onclick="removeBackgroundImage()" id="removeBgBtn" style="display: none;">
+                        🗑️ Remove Background
+                    </button>
                     <button class="action-btn primary" onclick="exportAsPNG()">
                         📥 Export as PNG
                     </button>
@@ -576,6 +603,10 @@
         let showGrid = true;
         let zoom = 1;
         let gridSize = 20;
+        
+        // Background image support
+        let backgroundImage = null;
+        let backgroundOpacity = 0.5;
         
         // History management for undo/redo
         let history = [];
@@ -687,7 +718,7 @@
             startX = x;
             startY = y;
             
-            if (['door', 'window', 'elevator', 'marker', 'text'].includes(currentTool)) {
+            if (['door', 'window', 'elevator', 'marker', 'text', 'tree'].includes(currentTool)) {
                 addElement(x, y);
                 isDrawing = false;
             }
@@ -733,7 +764,7 @@
             for (let i = elements.length - 1; i >= 0; i--) {
                 const elem = elements[i];
                 
-                if (elem.type === 'room' || elem.type === 'corridor' || elem.type === 'building' || elem.type === 'walkway') {
+                if (['room', 'corridor', 'building', 'walkway', 'lawn', 'garden', 'stairs'].includes(elem.type)) {
                     if (x >= elem.x && x <= elem.x + elem.width &&
                         y >= elem.y && y <= elem.y + elem.height) {
                         elements.splice(i, 1);
@@ -744,7 +775,7 @@
                         return;
                     }
                 } else {
-                    // For point elements (door, window, etc.)
+                    // For point elements (door, window, tree, etc.)
                     const distance = Math.sqrt(Math.pow(x - elem.x, 2) + Math.pow(y - elem.y, 2));
                     if (distance < 30) {
                         elements.splice(i, 1);
@@ -789,6 +820,14 @@
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
+            // Draw background image if loaded
+            if (backgroundImage) {
+                ctx.save();
+                ctx.globalAlpha = backgroundOpacity;
+                ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            }
+            
             // Draw grid
             if (showGrid) {
                 ctx.strokeStyle = '#e2e8f0';
@@ -832,6 +871,8 @@
             
             const corridorColor = { fill: 'rgba(203, 213, 225, 0.4)', stroke: '#cbd5e1' };
             const walkwayColor = { fill: 'rgba(254, 240, 138, 0.5)', stroke: '#fbbf24' };
+            const lawnColor = { fill: 'rgba(134, 239, 172, 0.6)', stroke: '#22c55e' };
+            const gardenColor = { fill: 'rgba(74, 222, 128, 0.5)', stroke: '#16a34a' };
             
             const buildingColors = {
                 'block-a': { fill: 'rgba(99, 102, 241, 0.3)', stroke: '#6366f1' },
@@ -925,6 +966,76 @@
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
                     ctx.fillText(elem.label, elem.x + elem.width/2, elem.y + elem.height/2);
+                }
+            } else if (elem.type === 'lawn') {
+                ctx.fillStyle = lawnColor.fill;
+                ctx.strokeStyle = lawnColor.stroke;
+                ctx.lineWidth = 3;
+                ctx.fillRect(elem.x, elem.y, elem.width, elem.height);
+                ctx.strokeRect(elem.x, elem.y, elem.width, elem.height);
+                
+                // Draw grass pattern
+                ctx.strokeStyle = '#16a34a';
+                ctx.lineWidth = 1;
+                for (let i = 0; i < 20; i++) {
+                    const gx = elem.x + Math.random() * elem.width;
+                    const gy = elem.y + Math.random() * elem.height;
+                    ctx.beginPath();
+                    ctx.moveTo(gx, gy);
+                    ctx.lineTo(gx, gy - 5);
+                    ctx.stroke();
+                }
+                
+                if (elem.label) {
+                    ctx.fillStyle = lawnColor.stroke;
+                    ctx.font = 'bold 16px DM Sans';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(elem.label, elem.x + elem.width/2, elem.y + elem.height/2);
+                }
+            } else if (elem.type === 'garden') {
+                ctx.fillStyle = gardenColor.fill;
+                ctx.strokeStyle = gardenColor.stroke;
+                ctx.lineWidth = 3;
+                ctx.fillRect(elem.x, elem.y, elem.width, elem.height);
+                ctx.strokeRect(elem.x, elem.y, elem.width, elem.height);
+                
+                // Draw flower/plant pattern
+                ctx.fillStyle = '#dc2626';
+                for (let i = 0; i < 8; i++) {
+                    const fx = elem.x + 10 + Math.random() * (elem.width - 20);
+                    const fy = elem.y + 10 + Math.random() * (elem.height - 20);
+                    ctx.beginPath();
+                    ctx.arc(fx, fy, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                if (elem.label) {
+                    ctx.fillStyle = gardenColor.stroke;
+                    ctx.font = 'bold 16px DM Sans';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(elem.label, elem.x + elem.width/2, elem.y + elem.height/2);
+                }
+            } else if (elem.type === 'tree') {
+                // Draw tree trunk
+                ctx.fillStyle = '#92400e';
+                ctx.fillRect(elem.x - 4, elem.y + 5, 8, 15);
+                
+                // Draw tree foliage (circle)
+                ctx.fillStyle = '#22c55e';
+                ctx.beginPath();
+                ctx.arc(elem.x, elem.y, 12, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#16a34a';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                if (elem.label) {
+                    ctx.fillStyle = '#000';
+                    ctx.font = 'bold 12px DM Sans';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(elem.label, elem.x, elem.y + 35);
                 }
             } else if (elem.type === 'door') {
                 ctx.fillStyle = '#f59e0b';
@@ -1025,6 +1136,58 @@
             }
         }
 
+        function loadBackgroundImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    backgroundImage = img;
+                    
+                    // Optionally resize canvas to match image
+                    if (confirm('Do you want to resize the canvas to match the image dimensions?')) {
+                        canvasWidth = img.width;
+                        canvasHeight = img.height;
+                        canvas.width = canvasWidth;
+                        canvas.height = canvasHeight;
+                        document.getElementById('canvasWidth').value = canvasWidth;
+                        document.getElementById('canvasHeight').value = canvasHeight;
+                        document.getElementById('gridDisplay').textContent = `${canvasWidth} × ${canvasHeight} px`;
+                    }
+                    
+                    // Show opacity control and remove button
+                    document.getElementById('bgOpacitySection').style.display = 'block';
+                    document.getElementById('removeBgBtn').style.display = 'flex';
+                    
+                    drawCanvas();
+                    showToast('Background image loaded! You can now draw over it.');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            // Reset file input
+            event.target.value = '';
+        }
+
+        function updateBackgroundOpacity(value) {
+            backgroundOpacity = value / 100;
+            document.getElementById('opacityValue').textContent = value + '%';
+            drawCanvas();
+        }
+
+        function removeBackgroundImage() {
+            if (confirm('Remove the background image?')) {
+                backgroundImage = null;
+                document.getElementById('bgOpacitySection').style.display = 'none';
+                document.getElementById('removeBgBtn').style.display = 'none';
+                drawCanvas();
+                showToast('Background image removed');
+            }
+        }
+
         function exportAsPNG() {
             // Create a temporary canvas for export
             const exportCanvas = document.createElement('canvas');
@@ -1035,6 +1198,13 @@
             // Draw white background
             exportCtx.fillStyle = 'white';
             exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+            
+            // Draw background image if exists
+            if (backgroundImage) {
+                exportCtx.globalAlpha = backgroundOpacity;
+                exportCtx.drawImage(backgroundImage, 0, 0, exportCanvas.width, exportCanvas.height);
+                exportCtx.globalAlpha = 1.0;
+            }
             
             // Draw all elements using the export context
             elements.forEach(elem => {
@@ -1068,6 +1238,8 @@
                 height: canvas.height,
                 gridSize: gridSize,
                 elements: elements,
+                backgroundImage: backgroundImage ? canvas.toDataURL('image/png') : null,
+                backgroundOpacity: backgroundOpacity,
                 metadata: {
                     created: new Date().toISOString(),
                     version: '2.0',
@@ -1113,6 +1285,25 @@
                         gridSize = data.gridSize;
                     }
                     
+                    // Restore background image if available
+                    if (data.backgroundImage) {
+                        const img = new Image();
+                        img.onload = function() {
+                            backgroundImage = img;
+                            backgroundOpacity = data.backgroundOpacity || 0.5;
+                            document.getElementById('bgOpacity').value = backgroundOpacity * 100;
+                            document.getElementById('opacityValue').textContent = Math.round(backgroundOpacity * 100) + '%';
+                            document.getElementById('bgOpacitySection').style.display = 'block';
+                            document.getElementById('removeBgBtn').style.display = 'flex';
+                            drawCanvas();
+                        };
+                        img.src = data.backgroundImage;
+                    } else {
+                        backgroundImage = null;
+                        document.getElementById('bgOpacitySection').style.display = 'none';
+                        document.getElementById('removeBgBtn').style.display = 'none';
+                    }
+                    
                     // Restore elements
                     elements = data.elements;
                     
@@ -1147,14 +1338,22 @@
             svgContent += `<rect width="100%" height="100%" fill="white"/>`;
             
             elements.forEach(elem => {
-                if (elem.type === 'room' || elem.type === 'corridor' || elem.type === 'building' || elem.type === 'walkway') {
-                    const color = elem.type === 'building' ? '#6366f1' : 
-                                  elem.type === 'walkway' ? '#fbbf24' :
-                                  elem.type === 'room' ? '#3b82f6' : '#8b5cf6';
+                if (['room', 'corridor', 'building', 'walkway', 'lawn', 'garden', 'stairs'].includes(elem.type)) {
+                    let color = '#3b82f6'; // default room color
+                    if (elem.type === 'building') color = '#6366f1';
+                    else if (elem.type === 'walkway') color = '#fbbf24';
+                    else if (elem.type === 'corridor') color = '#8b5cf6';
+                    else if (elem.type === 'lawn') color = '#22c55e';
+                    else if (elem.type === 'garden') color = '#16a34a';
+                    else if (elem.type === 'stairs') color = '#8b5cf6';
+                    
                     svgContent += `<rect x="${elem.x}" y="${elem.y}" width="${elem.width}" height="${elem.height}" fill="none" stroke="${color}" stroke-width="3"/>`;
                     if (elem.label) {
                         svgContent += `<text x="${elem.x + elem.width/2}" y="${elem.y + elem.height/2}" text-anchor="middle" fill="${color}" font-family="sans-serif" font-size="16" font-weight="bold">${elem.label}</text>`;
                     }
+                } else if (elem.type === 'tree') {
+                    svgContent += `<circle cx="${elem.x}" cy="${elem.y}" r="12" fill="#22c55e" stroke="#16a34a" stroke-width="2"/>`;
+                    svgContent += `<rect x="${elem.x - 4}" y="${elem.y + 5}" width="8" height="15" fill="#92400e"/>`;
                 }
             });
             
@@ -1184,4 +1383,5 @@
     </script>
 </body>
 </html>
+
 
